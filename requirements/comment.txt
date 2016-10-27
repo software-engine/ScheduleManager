@@ -2,6 +2,9 @@ Flask
 Flask-Script
 Flask-SQLAlchemy
 Flask-Migrate
+sqlalchemy-migrate
+flask-mail
+flask-whooshalchemy
 Flask-WTF
 WTForms
 Flask-Bootstrap

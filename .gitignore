@@ -2,4 +2,4 @@
 flask/
 test/
 .DS_Store
-*.iml
+data.sqlite
