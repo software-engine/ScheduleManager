@@ -1,0 +1,15 @@
+Flask
+Flask-Script
+Flask-SQLAlchemy
+Flask-Migrate
+Flask-WTF
+WTForms
+Flask-Bootstrap
+itsdangerous
+Jinja2
+MarkupSafe
+SQLAlchemy
+Werkzeug
+flask-login
+flask-moment
+ForgeryPy
