@@ -3,3 +3,4 @@ flask/
 tests/
 .DS_Store
 data.sqlite
+*.pyc
