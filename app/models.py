@@ -20,6 +20,20 @@ class User(UserMixin, db.Model):
     avatar_hash = db.Column(db.String(32))
     confirmed = db.Column(db.Boolean, default=False)
 
+
+class Activity(db.Model):
+    pass
+
+
+class Bookmark(db.Model):
+    __tablename__ = 'bookmark'
+    id = db.Column(db.Integer,primary_key=True)
+    participator  = db.Column(db.Integer,db.ForeignKey('User.id'))
+    activity = db.relationship('Activity',backref='Activity.id',lazy='dynamic')
+
+    def __init__(self):
+        pass
+
     @property
     def password(self):
         raise AttributeError("password is not a readable attribute")
@@ -111,9 +125,9 @@ class User(UserMixin, db.Model):
         return True
 
     def __repr__(self):
-        return '<User %r>' % self.name
+        return '<User %r>' % self.name\
 
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
