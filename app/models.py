@@ -11,7 +11,6 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 
 class User(UserMixin, db.Model):
-    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), unique=True)
     email = db.Column(db.String(64), unique=True)
@@ -19,6 +18,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     avatar_hash = db.Column(db.String(32))
     confirmed = db.Column(db.Boolean, default=False)
+    activities = db.relationship('Activity', backref='host', lazy='dynamic')
 
     @property
     def password(self):
@@ -117,3 +117,61 @@ class User(UserMixin, db.Model):
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+
+class Activity(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    host_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    name = db.Column(db.String(15))
+    introduction = db.Column(db.Text(140))
+    location = db.Column(db.String(30))
+    start_date = db.Column(db.Date)
+    end_date = db.Column(db.Date)
+    schedule = db.relationship('Schedule', backref='activity', lazy='dynamic')
+
+    def __init__(self, **kwargs):
+        super(Activity, self).__init__(**kwargs)
+
+    def update(self, new_name=name, new_location=location, new_introduction=introduction,
+               new_start_date=start_date, new_end_date=end_date):
+        self.name = new_name
+        self.introduction = new_introduction
+        self.location = new_location
+        self.start_date = new_start_date
+        self.end_date = new_end_date
+
+
+class Schedule(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    activity_id = db.Column(db.Integer, db.ForeignKey('activity.id'))
+    information = db.Column(db.Text(140))
+    location = db.Column(db.String(30))
+    start_time = db.Column(db.DateTime)
+    end_time = db.Column(db.DateTime)
+
+    def __init__(self, **kwargs):
+        super(Schedule, self).__init__(**kwargs)
+
+    def update(self, new_information=information, new_location=location,
+               new_start_time=start_time, new_end_time=end_time):
+        self.information = new_information
+        self.location = new_location
+        self.start_time = new_start_time
+        self.end_time = new_end_time
+
+
+class Bookmark(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    activity_id = db.Column(db.Integer, db.ForeignKey('activity.id'))
+
+    def __init__(self, **kwargs):
+        super(Bookmark, self).__init__(**kwargs)
+
+
+def get_activities(user_id):
+    bookmarks = Bookmark.query.filter_by(owner_id=user_id).all()
+    activities = []
+    for bookmark in bookmarks:
+        activities.append(Activity.query.filter_by(id=bookmark.activity_id).first())
+    return activities
