@@ -5,9 +5,8 @@ from flask_login import login_required,current_user
 from . import participant
 from forms import SearchACForm,SearchHForm,DeleteItemsForm,\
     DeleteItemForm,AddItemsForm,AddItemForm,ACdetailsForm
-from ..models import User,Bookmark,Activity
+from ..models import User,Bookmark,Activity,get_activities
 from .. import db
-from flask.ext.sqlalachemy import SQLAlchemy
 
 @participant.before_request
 def before_request():
@@ -19,8 +18,7 @@ def before_request():
 def mypage():
     if g.user.is_anonymous or g.user.confirmed:
         return redirect(url_for('user.uncomfirmed'))
-    bookmark = Bookmark.query.get_or_404(g.user.id)
-    results = bookmark.activity.name.all()
+    results = get_activities(g.user_id)
     results = results.paginate(1,10,False)
     return render_template('participant/mypage.html',results=results)
 
@@ -29,17 +27,18 @@ def mypage():
 @login_required
 def ACdetails():
     form = ACdetailsForm()
-    bookmark = Bookmark.query.get_or_404(g.user.id)
+    bookmarks = Bookmark.query.filter_by(owner_id=g.user_id).all()
     if form.validate_on_submit():
         id = int(form.AC.data)
-        bk = bookmark.query.get_or_404(id)
-        AC = bk.atactivity()
+        bk = bookmarks.query.get_or_404(id)
+        AC = Activity.query.filter_by(bk.activity_id == Activity.id).all()
+        Or = User.query.join(User.name,AC.host_id == User.id).first()
         return render_template('participant/ACdetails.html',
                                name = AC.name,
-                               startdate = AC.startdate,
-                               enddate = AC.enddate,
+                               start_date = AC.start_date,
+                               end_date = AC.end_date,
                                introduction = AC.introduction,
-                               organizer = AC.organizer,
+                               organizer = Or,
                                location = AC.location)
 
 
@@ -47,11 +46,11 @@ def ACdetails():
 @login_required
 def delete_item():
     form = DeleteItemForm()
-    bookmark = Bookmark.query.get_or_404(g.user.id)
+    bookmarks = Bookmark.query.filter_by(owner_id=g.user_id).all()
 
     if form.validate_on_submit():
         id = int(form.item.data)
-        bk = bookmark.query.get_or_404(id)
+        bk = bookmarks.query.get_or_404(id)
         db.session.delete(bk)
         try:
             db.session.commit()
@@ -70,12 +69,12 @@ def delete_item():
 @login_required
 def delete_items():
     form = DeleteItemsForm()
-    bookmark = Bookmark.query.get_or_404(g.user.id)
+    bookmarks = Bookmark.query.filter_by(owner_id=g.user_id).all()
 
     if form.validate_on_submit():
         ids = json.loads(form.items.data)
         for item in ids:
-            bk = bookmark.query.get_or_404(int(item))
+            bk = bookmarks.query.get_or_404(int(item))
             db.session.delete(bk)
         try:
             db.session.commit()
@@ -96,8 +95,8 @@ def searchH():
     form = SearchHForm
 
     if form.validate_on_submit():
-        results = Activity.query.join(Activity.name,
-                                       (form.host==User.name)).order_by(Activity.starttime.all().desc())
+        results = Activity.query.filter_by(Activity.name,
+                                       (form.host==User.name)).all().order_by(Activity.start_date.desc())
         results = results.paginate(1,10,False)
         return render_template('participant/search.html',results=results)
     flash('Inviad hostname!')
@@ -108,8 +107,8 @@ def searchH():
 def searchAC():
     form = SearchACForm
     if form.validate_on_submit():
-        results = Activity.query.join(Activity.name,
-                                       (form.activity==Activity.name)).order_by(Activity.starttime.desc())
+        results = Activity.query.filter_by(Activity.name,
+                                       (form.activity==Activity.name)).order_by(Activity.start_date.desc())
         results = results.paginate(1,10,False)
         return render_template('participant/search.html',results=results)
     flash('Inviad activityname!')
@@ -121,9 +120,9 @@ def add_article():
     form = AddItemForm()
 
     if form.validate_on_submit():
-        activity = int(form.item.data)
-        participator = g.user.id
-        bookmark = Bookmark(participator=participator,activity=activity)
+        activity_id = int(form.item.data)
+        ower_id = g.user.id
+        bookmark = Bookmark(ower_id=ower_id,activity_id=activity_id)
         db.session.add(bookmark)
         try:
             db.session.commit()
@@ -146,9 +145,9 @@ def add_items():
     if form.validate_on_submit():
         ids = json.loads(form.items.data)
         for id in ids:
-            activity = int(id)
-            participator = g.user.id
-            bookmark = Bookmark(participator=participator, activity=activity)
+            activity_id = int(id)
+            ower_id = g.user.id
+            bookmark = Bookmark(ower_id=ower_id,activity_id=activity_id)
             db.session.add(bookmark)
         try:
             db.session.commit()
