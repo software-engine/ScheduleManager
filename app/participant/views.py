@@ -117,14 +117,14 @@ def add_activities():
     if form.errors:
         flash(u'fail to add these items!', 'danger')
 
-    return render_template(url_for('participant.search.html',
+    return render_template(url_for('participant/search.html',
                                    page=request.args.get('page', 1, type=int)))
 
 
 @participant.route('/participant/bookmark_manage', methods=['POST'])
 @login_required
 def bookmark_manage():
-    return redirect(url_for('participant/bookmark_manage'))
+    return redirect(url_for('participant/bookmark_manage.html'))
 
 
 @participant.route('/participant/bookmark_manage/delete_activity', methods=['GET', 'POST'])
