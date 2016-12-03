@@ -4,22 +4,23 @@
 
 
 from flask.ext.wtf import Form
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import Required, Length, Email, Regexp, EqualTo
+from wtforms import StringField, PasswordField, BooleanField, SubmitField,SelectField
+from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
 from ..models import User
 
 
 class RegistrationForm(Form):
-    email = StringField('Email', validators=[DeprecationWarning(), Length(1, 64),
+    email = StringField('Email', validators=[DataRequired(), Length(1, 64),
                                              Email()])
     name = StringField('Name', validators=[
-        DeprecationWarning(), Length(1, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
-                                                    'Username must have only letters, '
-                                                    'numbers, dots or underscores')])
+        DataRequired(), Length(1, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
+                                              'Username must have only letters, '
+                                              'numbers, dots or underscores')])
     password = PasswordField('Password', validators=[
-        DeprecationWarning(), EqualTo('password2', message='Passwords must match.')])
-    password2 = PasswordField('Confirm password', validators=[DeprecationWarning()])
+        DataRequired(), EqualTo('password2', message='Passwords must match.')])
+    password2 = PasswordField('Confirm password', validators=[DataRequired()])
+    role = SelectField('Role', choices=[('par', 'Participant'), ('reg', 'Register')], coerce=str, validators=[DataRequired()])
     submit = SubmitField('Register')
 
     def validate_email(self, field):

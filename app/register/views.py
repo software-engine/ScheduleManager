@@ -4,7 +4,7 @@
 from . import register
 from .forms import RegistrationForm
 from ..models import User
-from flask import redirect, url_for, flash, render_template, request, current_app
+from flask import redirect, url_for, flash, render_template,Flask, request, current_app
 from .. import db
 from flask.ext.login import current_user
 from flask.ext.login import login_required
@@ -29,35 +29,39 @@ def send_email(to, subject, template, **kwargs):
     return thr
 
 
-@register.route('/register', methods=['GET', 'POST'])
-def register():
+@register.route('/user_register', methods=['GET', 'POST'])
+def user_register():
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(email=form.email.data,
                     name=form.name.data,
-                    password=form.password.data)
+                    password=form.password.data,
+                    identity=form.role.data)
         db.session.add(user)
         db.session.commit()
         token = user.generate_confirmation_token()
-        if not send_email(user.email, 'Confirm Your Account',
-                          'register/email/confirm', user=user, token=token):
-            flash('Email sending failed')
-        else:
+        try:
+            send_email(user.email, 'Confirm Your Account',
+                       'register/email/confirm', user=user, token=token)
             flash('A confirmation email has been sent to you by email.')
-        return redirect(url_for('login.login'))
-    return render_template('register/register.html', form=form)
+            return redirect(url_for('login.user_login'))
+        except:
+            flash('Email sending failed and the  email is wrong')
+            db.session.delete(user)
+            db.session.commit()
+    return render_template('register/user_register.html', form=form)
 
 
 @register.route('/confirm/<token>')
 @login_required
 def confirm(token):
     if current_user.confirmed:
-        return redirect(url_for('login.login'))
+        return redirect(url_for('login.user_login'))
     if current_user.confirm(token):
         flash('You have confirmed your account. Thanks!')
     else:
         flash('The confirmation link is invalid or has expired.')
-    return redirect(url_for('login.login'))
+    return redirect(url_for('login.user_login'))
 
 
 @register.route('/confirm')
@@ -69,4 +73,6 @@ def resend_confirmation():
         flash('Email sending failed')
     else:
         flash('A new confirmation email has been sent to you by email.')
-    return redirect(url_for('login.login'))
+    return redirect(url_for('login.user_login'))
+
+
