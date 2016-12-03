@@ -5,10 +5,6 @@ from wtforms import StringField,SubmitField
 from wtforms.validators import DataRequired
 
 
-class ActivitydetailsForm(Form):
-    bookmark_id = StringField(validators=[DataRequired])
-
-
 class SearchHostForm(Form):
     host_name = StringField('host_name', validators=[DataRequired])
     submit = SubmitField('Search Host')
