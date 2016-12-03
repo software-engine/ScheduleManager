@@ -5,31 +5,38 @@ from wtforms import StringField,SubmitField
 from wtforms.validators import DataRequired
 
 
-class ACdetailsForm(Form):
-    AC = StringField(validators=[DataRequired])
-
-class SearchHForm(Form):
-    host = StringField('host', validators=[DataRequired])
+class ActivitydetailsForm(Form):
+    bookmark_id = StringField(validators=[DataRequired])
 
 
-class SearchACForm(Form):
-    activity = StringField('activity', validators=[DataRequired])
+class SearchHostForm(Form):
+    host_name = StringField('host_name', validators=[DataRequired])
+    submit = SubmitField('Search Host')
 
 
-class DeleteItemForm(Form):
-    item = StringField(validators=[DataRequired])
+class SearchActivityForm(Form):
+    activity_name = StringField('activity_name', validators=[DataRequired])
+    submit = SubmitField('Search Activity')
 
 
-class DeleteItemsForm(Form):
-    items = StringField(validators=[DataRequired])
+class DeleteActivityForm(Form):
+    bookmark_id = StringField(validators=[DataRequired])
+    submit = SubmitField('Delete')
 
 
-class AddItemForm(Form):
-    item = StringField(validators=[DataRequired])
+class DeleteActivitiesForm(Form):
+    bookmark_ids = StringField(validators=[DataRequired])
+    submit = SubmitField('Batch Delete')
 
 
-class AddItemsForm(Form):
-    items = StringField(validators=[DataRequired])
+class AddActivityForm(Form):
+    activity_id = StringField(validators=[DataRequired])
+    submit = SubmitField('Add')
+
+
+class AddActivitiesForm(Form):
+    activity_ids = StringField(validators=[DataRequired])
+    submit = SubmitField('Batch Add')
 
 
 
