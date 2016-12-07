@@ -9,6 +9,7 @@ from flask_login import login_required, current_user
 from .. import db
 from . import hosts
 import json
+import pdfkit
 
 
 @hosts.route('/')
@@ -188,3 +189,9 @@ def activity_detail(activity_id):
     activity = Activity.query.filter_by(id=activity_id)
     return render_template('activity_detail.html', activity=activity, schedules=activity.schedules,
                            endpoint='.activity_detail', id=activity.id)
+
+
+@hosts.route('/activity-detail/<int:activity_id>', methods=['POST'])
+@login_required
+def print_pdf():
+    pdfkit.from_url(request.path.url, 'activity.pdf')

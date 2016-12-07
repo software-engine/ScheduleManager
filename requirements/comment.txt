@@ -16,3 +16,4 @@ Werkzeug
 flask-login
 flask-moment
 ForgeryPy
+pdfkit
