@@ -1,0 +1,84 @@
+{% extends 'participant/participant_base.html' %}
+{% import 'pagination_macro.html' as macro %}
+
+{% block title %}参与者主页{% endblock %}
+
+{% block stylesheet %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block page_content %}
+    <div class="row">
+        <div class="col-lg-offset-1 col-lg-7" style="margin-top: 20px;">
+            <form class="form-group" role="form" method="post" action="{{ url_for('participant.search_host') }}">
+                {{ form1.csrf_token }}
+                <div class="input-group">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span> </span>
+                    {{ form1.host_name(class='form-control', placeholder='通过用户名搜索') }}
+                    <div class="input-group-btn">
+                        <button type="submit" class="btn btn-success">
+                            搜索
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-offset-1 col-lg-7" style="margin-top: 10px;">
+            <form class="form-group" role="form" method="post" action="{{ url_for('participant.search_activity') }}">
+                {{ form2.csrf_token }}
+                <div class="input-group">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span> </span>
+                    {{ form2.activity_name(class='form-control', placeholder='通过活动进行搜索') }}
+                    <div class="input-group-btn">
+                        <button type="submit" class="btn btn-success">
+                            搜索
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="body-wrap">
+            {% for activity in activities %}
+                <article id="post-bookmark-activity" class="article article-type-activities show is-hidden"
+                         itemscope itemprop="activitiesPost">
+                    <div class="article-meta">
+                        <a href="#" class="article-date">
+                            {{ activity.start_date.strftime('%m-%d') }}
+                        </a>
+                    </div>
+                    <div class="article-inner">
+                        <header class="article-header">
+                            <h1 itemprop="name">
+                                <a class="article-title"
+                                   href="{{ url_for('participant.activity_details', activity_id=activity.id) }}"
+                                        {% if activity.update_flag %}
+                                   style="color: red;"
+                                        {% endif %}>
+                                    {{ activity.name }}
+                                </a>
+                            </h1>
+                        </header>
+                        <div class="article-entry" itemprop="activityInfo">
+                            <p>
+                                {{ activity.introduction }}<br>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="article-info article-info-index">
+                        <div class="clearfix"></div>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="pagination">
+            {{ macro.pagination_widget(pagination, endpoint) }}
+        </div>
+    </div>
+{% endblock %}

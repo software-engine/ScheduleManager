@@ -4,7 +4,7 @@
 import hashlib
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin
+from flask_login import UserMixin, AnonymousUserMixin
 from . import db, login_manager
 from flask import current_app, request
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
@@ -127,7 +127,8 @@ class Activity(db.Model):
     location = db.Column(db.String(30))
     start_date = db.Column(db.Date)
     end_date = db.Column(db.Date)
-    schedule = db.relationship('Schedule', backref='activity', lazy='dynamic')
+    update_flag = db.Column(db.Boolean, default=False)
+    schedules = db.relationship('Schedule', backref='activity', lazy='dynamic')
 
     def __init__(self, **kwargs):
         super(Activity, self).__init__(**kwargs)
@@ -139,6 +140,7 @@ class Activity(db.Model):
         self.location = new_location
         self.start_date = new_start_date
         self.end_date = new_end_date
+        self.update_flag = True
 
 
 class Schedule(db.Model):
@@ -158,6 +160,7 @@ class Schedule(db.Model):
         self.location = new_location
         self.start_time = new_start_time
         self.end_time = new_end_time
+        Activity.query.filter_by(id=self.activity_id).first().update_flag = True
 
 
 class Bookmark(db.Model):
@@ -168,9 +171,15 @@ class Bookmark(db.Model):
     def __init__(self, **kwargs):
         super(Bookmark, self).__init__(**kwargs)
 
+    def add(self):
+        bookmark = Bookmark.query.filter_by(activity_id=self.activity_id).first()
+        if bookmark is not None:
+            pass
+        else:
+            db.session.add(self)
 
-def get_activities(user_id):
-    bookmarks = Bookmark.query.filter_by(owner_id=user_id).all()
+
+def get_activities(bookmarks):
     activities = []
     for bookmark in bookmarks:
         activities.append(Activity.query.filter_by(id=bookmark.activity_id).first())

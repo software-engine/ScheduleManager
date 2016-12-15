@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}{{ activity.name }}{% endblock %}
+
+{% block stylesheet %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block page_content %}
+    <div class="row">
+        <div class="body-wrap">
+            <article id="post-create-activity" class="article article-type-post" itemscope itemprop="activityPost">
+                <div class="article-inner">
+                    <input type="hidden" class="isFancy">
+                    <header class="article-header">
+                        {% if identity == 'hosts' %}
+                        <a href="{{ url_for('hosts.index') }}">
+                            <h1 class="article-title" itemprop="name">
+                                {{ activity.name }}
+                            </h1>
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('participant.homepage') }}">
+                            <h1 class="article-title" itemprop="name">
+                                {{ activity.name }}
+                            </h1>
+                        </a>
+                        {% endif %}
+                    </header>
+                    <div class="article-info article-info-post">
+                        <div class="article-tag tagcloud">
+                            <ul class="article-tag-list">
+                                <li class="article-tag-list-item">
+                                    <a class="color2" href="#" style="font-size: 16px;">
+                                        {{ host.name }}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="article-entry" itemprop="activityBody">
+                        <h2>地点:</h2>
+                        <p>{{ activity.location }}</p>
+                        <h2>开始日期</h2>
+                        <p>
+                            {{ activity.start_date.strftime('%m-%d') }}
+                        </p>
+                        <h2>结束日期</h2>
+                        <p>
+                            {{ activity.end_date.strftime('%m-%d') }}
+                        </p>
+                        <h2>日程</h2>
+                        <ul>
+                            {% for schedule in schedules %}
+                                <li>
+                                    {{ schedule.location }}<br>
+                                    <p>{{ schedule.information }}</p>
+                                    <p>
+                                        开始时间:{{ schedule.start_time.strftime('%m-%d %H:%M') }}</p>
+                                    <p>
+                                        结束时间:{{ schedule.end_time.strftime('%m-%d %H:%M') }}</p>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </article>
+        </div>
+        <div class="col-sm-3 col-sm-offset-9">
+            <a onclick="window.print()"
+               class="btn btn-primary btn-lg btn-block">导出PDF</a>
+        </div>
+    </div>
+{% endblock %}
