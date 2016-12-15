@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -10,26 +10,33 @@
     {% block stylesheet %}
         <link href="{{ url_for('static', filename='css/bootstrap.css') }}" rel="stylesheet">
         <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-        <link href="{{ url_for('static', filename='css/bootstrap-theme.css') }}" rel="stylesheet">
-        <link href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/common.css') }}" rel="stylesheet">
     {% endblock %}
 </head>
-<body>
+<body background="{{ url_for('static', filename='background/cork-wallet.png') }}">
+{% block header %}{% endblock %}
+
 {% block content %}
     <div class="container">
-    {% for message in get_flashed_messages() %}
-    <div class="alert alert-warning">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        {{ message }}
-    </div>
-    {% endfor %}
-
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-warning">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% endif %}
+    {% endwith %}
     {% block page_content %}{% endblock %}
     </div>
 {% endblock %}
 
+{% block footer %}{% endblock %}
+
 {% block script %}
-    <script src="{{ url_for('static', filename='js/jquery-3.3.3.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-3.1.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-2.2.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 {% endblock %}
 </body>

@@ -1,0 +1,43 @@
+{% extends 'host/host_base.html' %}
+{% import 'pagination_macro.html' as macro %}
+
+{% block title %}主办方主页{% endblock %}
+
+{% block stylesheet %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block page_content %}
+    <div class="row">
+        <div class="body-wrap">
+            {% for activity in pagination.items %}
+                <article id="post-activity" class="article article-type-activity show is-hidden"
+                         itemscope itemprop="activityPost">
+                    <div class="article-inner">
+                        <header class="article-header">
+                            <h1 itemprop="name">
+                                <a class="article-title"
+                                   href="{{ url_for('hosts.activity_detail', activity_id=activity.id) }}">{{ activity.name }}</a>
+                            </h1>
+                        </header>
+                        <div class="article-entry" itemprop="activityInfo">
+                            <p>
+                                {{ activity.introduction }}<br>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="article-info article-info-index">
+                        <div class="clearfix"></div>
+                    </div>
+                </article>
+            {% endfor %}
+
+        </div>
+    </div>
+    <div class="row">
+    <div class="pagination">
+        {{ macro.pagination_widget(pagination, endpoint) }}
+    </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <header style="margin-top: 25px;">
+        <div class="header-top">
+            <div class="container">
+                <h1><a href="{{ url_for('participant.homepage') }}">参与者页面</a> </h1>
+            </div>
+        </div>
+        <nav class="navbar navbar-btn" role="navigation">
+            <div class="container">
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class=""><a href="{{ url_for('participant.homepage') }}" style="font-size: 20px;"><span class="glyphicon glyphicon-home" style="font-size: 18px;"></span>主页</a> </li>
+                        <li class=""><a href="{{ url_for('participant.bookmark_manage') }}" style="font-size: 20px;">管理收藏夹</a> </li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <img src="{{ current_user.gravatar(size=18) }}">
+                                {{ current_user.name }}<b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('login.change_email_request') }}">更改邮箱</a></li>
+                                <li><a href="{{ url_for('login.change_password') }}">更改密码</a></li>
+                                <li><a href="{{ url_for('login.change_name') }}">更改姓名</a> </li>
+                                <li><a href="{{ url_for('login.logout') }}">退出登录</a> </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends 'participant/participant_base.html' %}
+
+{% import 'pagination_macro.html' as macro %}
+
+{% block title %}搜索结果{% endblock %}
+
+{% block page_content %}
+    <div class="row">
+        <div class="entry-box manage-articles">
+            <h3><strong>搜索结果</strong></h3>
+            <hr/>
+            <div class="row articles-list">
+                <div class="list-handle">
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <a class="btn btn-primary" id="addActivities">
+                                <span class="glyphicon glyphicon-plus"></span>批量添加
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-details">
+                    <form class="add-activities" id="addActivitiesForm" method="post"
+                          action="{{ url_for('participant.add_activities', page=page, method=method, query=query) }}">
+                        {{ form2.csrf_token }}
+                        {{ form2.activity_ids(type='hidden', value='') }}
+                        <form>
+                            {{ form1.activity_id(type='hidden') }}
+                        </form>
+                        <table class="table table-striped table-hover">
+                            <thead>
+                            <tr class="table-header">
+                                <th class="table-checkbox-or-left"><input type="checkbox" id="select-all">全选</th>
+                                <th>活动名称</th>
+                                <th>开始日期</th>
+                                <th>添加</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for activity in activities.items %}
+                                <tr>
+                                    <td class="table-checkbox-or-left"><input type="checkbox" class="op_check"
+                                                                              value="{{ activity.id }}"></td>
+                                    <td class="table-checkbox-or-left"><a
+                                            href="{{ url_for('participant.activity_details', activity_id=activity.id) }}"
+                                            target="_blank">{{ activity.name }}</a></td>
+                                    <td>{{ activity.start_date.strftime('%m-%d') }}</td>
+                                    <td>
+                                        <form class="add-activity" id="addForm{{ activity.id }}" method="post"
+                                              action="{{ url_for('participant.add_activity', page=page, query=query, method=method) }}">
+                                            {{ form1.csrf_token }}
+                                            {{ form1.activity_id(type='hidden', value=activity.id) }}
+                                            <a class="btn btn-primary btn-sm" onclick="addActivity({{ activity.id }})"
+                                               title="添加活动">
+                                                <span class="glyphicon glyphicon-plus"></span>
+                                            </a>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+                <div class="pagination">
+                    {{ macro.pagination_widget(activities, endpoint, method=method, query=query) }}
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="selectActivityFormModal">
+            <div class="modal-dialog">
+                <div class="modal-content message_align">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">未选择活动</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>请选择要添加的活动</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <a class="btn btn-success" data-dismiss="modal">确定</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/add.js') }}"></script>
+{% endblock %}

@@ -1,13 +1,42 @@
 {% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}Activity Blog - Change Name{% endblock %}
+{% block title %}更改用户名{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
-    <h1>Change Your Name</h1>
-</div>
-<div class="col-md-4">
-    {{ wtf.quick_form(form) }}
+<div class="login-page">
+<div class="row"></div>
+    <div class="col-xs-6 col-md-4 col-xs-offset-4">
+        <h3 class="text-center">输入新的用户名和密码</h3>
+        <br>
+        <form class="form-horizontal" role="form" method="post" action="{{ url_for('login.change_name') }}">
+            <div class="form-group form-group-lg">
+                <div class="col-sm-offset-1 col-sm-10">
+                    <div class="input-group">
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span> </span>
+                        {{ form.name(class='form-control', placeholder='新用户名') }}
+                    </div>
+                    {% for error in form.name.errors %}
+                        <span class="col-sm-12" style="color: #ff0000; text-align: center;">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="form-group form-group-lg">
+                <div class="col-sm-offset-1 col-sm-10">
+                    <div class="input-group">
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span> </span>
+                        {{ form.password(class='form-control', placeholder='密码') }}
+                    </div>
+                    {% for error in form.name.errors %}
+                        <span class="col-sm-12" style="color: #ff0000; text-align: center;">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="form-group form-group-lg">
+                <div class="col-sm-offset-4 col-sm-5">
+                    <button type="submit" class="btn btn-success btn-block btn-lg">确定</button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}
